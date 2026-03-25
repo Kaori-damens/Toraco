@@ -1,0 +1,25 @@
+{
+  "database": {
+    "overlays": [],
+    "schema": {
+      "speedballs": {
+        "id": {
+          "type": "uuid",
+          "description": "Unique identifier for the speedball record"
+        },
+        "current_speed_multiplier": {
+          "type": "numeric",
+          "description": "The current speed multiplier of the ball"
+        }
+      },
+      "custom_weapon": {
+        "id": { "type": "uuid", "description": "Weapon id" },
+        "name": { "type": "text", "description": "Display name" },
+        "prompt": { "type": "text", "description": "User prompt used to generate" },
+        "definition": { "type": "jsonb", "description": "CustomWeapon definition payload" }
+      }
+    },
+    "instructions": "This game uses Websim's built-in credit transactions system for the donations leaderboard."
+  }
+}
+

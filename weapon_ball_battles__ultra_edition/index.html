@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weapon Ball Battles: The Ultra Edition</title>
+    <!-- Modular CSS: break up monolith for maintainability -->
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/animations.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/menu.css">
+    <link rel="stylesheet" href="./css/game.css">
+    <link rel="stylesheet" href="./css/gamemodes.css">
+    <!-- Legacy shim for any code that still imports style.css directly -->
+    <link rel="stylesheet" href="style.css">
+    <script>
+      // Early handler to suppress noisy unhandled promise rejections (e.g., SDK timeouts)
+      window.addEventListener('unhandledrejection', (event) => {
+        event.preventDefault();
+        const reason = event.reason || {};
+        const msg = (typeof reason === 'string') ? reason : (reason.message || String(reason || ''));
+        if (!/Request timed out/i.test(msg)) return; // only handle timeouts here
+
+        // Avoid duplicate toast if main.js already showed one
+        if (document.getElementById('global-error-toast')) return;
+
+        const m = /Request timed out(?: for requestId ([\w-]+))?/i.exec(msg);
+        const reqId = m && m[1] ? m[1] : null;
+
+        const toast = document.createElement('div');
+        toast.id = 'global-error-toast';
+        toast.textContent = reqId
+          ? `Connection sluggish (id: ${reqId}). Retrying or skipping...`
+          : 'A network request is taking a while. Please wait.';
+        toast.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:8px 12px;border-radius:8px;border:2px solid #fff;font-family:Anton,sans-serif;z-index:2000;';
+        const showToast = () => {
+          if (document.getElementById('global-error-toast')) return;
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 4000);
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', showToast);
+        } else {
+          showToast();
+        }
+      });
+    </script>
+</head>
+<body>
+    <div id="hot-banner">WE ARE ON THE HOT PAGE!</div>
+    <div id="loading-screen">
+        <p>Loading Game...</p>
+    </div>
+    <div id="transition-overlay"></div>
+    <div id="main-menu" style="display: none; opacity: 0;">
+        <h2 id="mrbobbys-title">Flynnwhite's</h2>
+        <h1 id="game-title">Weapon Ball Battles: The Ultra Edition</h1>
+        <button id="startButton">Start Game</button>
+        <!-- NEW: How To Play button directly under Start -->
+        <button id="howToPlayButton" class="menu-htp-btn">How to Play</button>
+        <div id="menu-secondary-buttons">
+            <!-- Reordered: Leaderboard, then Credits -->
+            <button id="leaderboardButton">Leaderboard</button>
+            <button id="creditsButton">Credits</button>
+        </div>
+    </div>
+    
+    <div id="game-container" style="display: none; opacity: 0;">
+        <!-- NEW: Top controls row above the VS text -->
+        <div id="top-controls">
+            <button id="hideUIButton">Hide UI</button>
+            <button id="gamemodesButton">Gamemodes</button>
+            <button id="gravityButton" title="Toggle gravity for this match">Gravity: On</button>
+            <!-- NEW: Horizontal velocity toggle -->
+            <button id="horizButton" title="Toggle horizontal movement for this match">Horizontal: On</button>
+            <!-- NEW: Speed toggle -->
+            <button id="speedButton" title="Cycle simulation speed (1x - 10x)">Speed: 1x</button>
+            <!-- NEW: Customize -->
+            <button id="customizeButton" title="Open custom ball/health maker">Customize</button>
+            <!-- NEW: AI Maker -->
+            <button id="aiMakerButton" title="Create AI weapons and browse gallery">AI Maker</button>
+            <button id="gridButton" title="Show grid overlay while dragging">Grid: On</button>
+            <!-- ADMIN: early access to April Fools event (hidden/styled by JS/CSS) -->
+            <button id="adminButton" style="display:none;" title="Admin: secret unlock">Admin</button>
+
+            <!-- April Fools Settings Modal (hidden by default) -->
+            <div id="april-settings" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:250;">
+              <div id="april-card" style="width:320px;background:#fff;border:4px solid #000;border-radius:12px;padding:12px;font-family:var(--display-font);">
+                <h3 style="margin:2px 0 8px 0;font-size:20px;">April Fools Settings</h3>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <label style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>Enable wacky mode for everyone</span>
+                    <input id="april-enable-all" type="checkbox" />
+                  </label>
+                  <label style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>Randomize player colors</span>
+                    <input id="april-random-colors" type="checkbox" />
+                  </label>
+                  <label style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>Spin multiplier</span>
+                    <input id="april-spin-mult" type="range" min="1" max="6" step="0.5" value="3" style="width:130px;" />
+                  </label>
+                  <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button id="april-apply" style="padding:8px 12px;border:3px solid #000;background:var(--btn-green);">Apply</button>
+                    <button id="april-close" style="padding:8px 12px;border:3px solid #000;background:var(--panel);color:white;">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div id="versus-display"></div>
+        <div id="arena-wrapper">
+            <div class="selection-box" id="selection-box-left">
+            </div>
+            <!-- NEW: stack container so we can overlay a blackout + message during shrinking -->
+            <div id="canvas-stack">
+                <canvas id="gameCanvas" width="520" height="520"></canvas>
+                <div id="arena-shrinking-overlay" style="display:none;">
+                    <div class="shrinking-text">Arena is shrinking!</div>
+                </div>
+            </div>
+            <div class="selection-box" id="selection-box-right">
+            </div>
+        </div>
+        <div id="damage-info-wrapper">
+            <div id="damage-display-left" class="damage-display"></div>
+            <div id="damage-display-right" class="damage-display"></div>
+        </div>
+        <div id="controls">
+            <div id="game-buttons">
+                <!-- Moved Hide UI, Gamemodes, Gravity to top-controls -->
+                <button id="playButton">Play</button>
+                <button id="resetButton">Reset</button>
+            </div>
+            <!-- NEW: Zoom controls -->
+            <div id="zoom-controls">
+                <button id="zoomOutButton" title="Zoom out">-</button>
+                <button id="zoomInButton" title="Zoom in">+</button>
+            </div>
+        </div>
+    </div>
+    <div id="gamemodes-menu" style="display: none;">
+        <h1>Gamemodes</h1>
+        <div id="gamemode-buttons">
+            <div id="classic-mode-container" class="gamemode-block">
+                <button id="classicButton" class="gamemode-btn classic">Classic</button>
+                <div id="arena-size-selection" class="arena-size-selection">
+                    <div class="arena-size-option" id="tiny-arena-btn" data-size="tiny">
+                        <div class="size-square tiny-square"></div>
+                        <span>Tiny</span>
+                    </div>
+                    <div class="arena-size-option" id="small-arena-btn" data-size="small">
+                        <div class="size-square small-square"></div>
+                        <span>Small</span>
+                    </div>
+                    <div class="arena-size-option" id="medium-arena-btn" data-size="medium">
+                        <div class="size-square medium-square"></div>
+                        <span>Medium</span>
+                    </div>
+                    <div class="arena-size-option" id="large-arena-btn" data-size="large">
+                        <div class="size-square large-square"></div>
+                        <span>Large</span>
+                    </div>
+                    <div class="arena-size-option" id="huge-arena-btn" data-size="huge">
+                        <div class="size-square huge-square"></div>
+                        <span>Huge</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ffa-mode-container" class="gamemode-block">
+                <button id="freeForAllButton" class="gamemode-btn free-for-all">Free for All</button>
+                <div id="arena-size-selection-ffa" class="arena-size-selection">
+                    <div class="arena-size-option" id="tiny-arena-btn-ffa" data-size="tiny">
+                        <div class="size-square tiny-square"></div>
+                        <span>Tiny</span>
+                    </div>
+                    <div class="arena-size-option" id="small-arena-btn-ffa" data-size="small">
+                        <div class="size-square small-square"></div>
+                        <span>Small</span>
+                    </div>
+                    <div class="arena-size-option" id="medium-arena-btn-ffa" data-size="medium">
+                        <div class="size-square medium-square"></div>
+                        <span>Medium</span>
+                    </div>
+                    <div class="arena-size-option" id="large-arena-btn-ffa" data-size="large">
+                        <div class="size-square large-square"></div>
+                        <span>Large</span>
+                    </div>
+                    <div class="arena-size-option" id="huge-arena-btn-ffa" data-size="huge">
+                        <div class="size-square huge-square"></div>
+                        <span>Huge</span>
+                    </div>
+                    <!-- NEW: Shrinking option (FFA) -->
+                    <div class="arena-size-option" id="shrinking-arena-btn-ffa" data-size="shrinking" title="Starts Huge, shrinks every 30s">
+                        <div class="shrinking-stack">
+                            <div class="size-square huge-square"></div>
+                            <div class="size-square large-square"></div>
+                            <div class="size-square medium-square"></div>
+                            <div class="size-square small-square"></div>
+                        </div>
+                        <span>Shrinking</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teams-mode-container" class="gamemode-block">
+                <button id="teamsButton" class="gamemode-btn teams">Teams</button>
+                <div id="arena-size-selection-teams" class="arena-size-selection">
+                    <div class="arena-size-option" id="tiny-arena-btn-teams" data-size="tiny">
+                        <div class="size-square tiny-square"></div>
+                        <span>Tiny</span>
+                    </div>
+                    <div class="arena-size-option" id="small-arena-btn-teams" data-size="small">
+                        <div class="size-square small-square"></div>
+                        <span>Small</span>
+                    </div>
+                    <div class="arena-size-option" id="medium-arena-btn-teams" data-size="medium">
+                        <div class="size-square medium-square"></div>
+                        <span>Medium</span>
+                    </div>
+                    <div class="arena-size-option" id="large-arena-btn-teams" data-size="large">
+                        <div class="size-square large-square"></div>
+                        <span>Large</span>
+                    </div>
+                    <div class="arena-size-option" id="huge-arena-btn-teams" data-size="huge">
+                        <div class="size-square huge-square"></div>
+                        <span>Huge</span>
+                    </div>
+                    <!-- NEW: Shrinking option (Teams) -->
+                    <div class="arena-size-option" id="shrinking-arena-btn-teams" data-size="shrinking" title="Starts Huge, shrinks every 30s">
+                        <div class="shrinking-stack">
+                            <div class="size-square huge-square"></div>
+                            <div class="size-square large-square"></div>
+                            <div class="size-square medium-square"></div>
+                            <div class="size-square small-square"></div>
+                        </div>
+                        <span>Shrinking</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Boss Fight mode -->
+            <div id="boss-mode-container" class="gamemode-block">
+                <button id="bossButton" class="gamemode-btn boss">Boss Fight</button>
+                <div id="arena-size-selection-boss" class="arena-size-selection">
+                    <!-- Only Large and Huge allowed -->
+                    <div class="arena-size-option" id="large-arena-btn-boss" data-size="large">
+                        <div class="size-square large-square"></div>
+                        <span>Large</span>
+                    </div>
+                    <div class="arena-size-option" id="huge-arena-btn-boss" data-size="huge">
+                        <div class="size-square huge-square"></div>
+                        <span>Huge</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Single mode -->
+            <div id="single-mode-container" class="gamemode-block">
+                <button id="singleButton" class="gamemode-btn single">Single</button>
+                <div id="arena-size-selection-single" class="arena-size-selection">
+                    <div class="arena-size-option" id="tiny-arena-btn-single" data-size="tiny">
+                        <div class="size-square tiny-square"></div>
+                        <span>Tiny</span>
+                    </div>
+                    <div class="arena-size-option" id="small-arena-btn-single" data-size="small">
+                        <div class="size-square small-square"></div>
+                        <span>Small</span>
+                    </div>
+                    <div class="arena-size-option" id="medium-arena-btn-single" data-size="medium">
+                        <div class="size-square medium-square"></div>
+                        <span>Medium</span>
+                    </div>
+                    <div class="arena-size-option" id="large-arena-btn-single" data-size="large">
+                        <div class="size-square large-square"></div>
+                        <span>Large</span>
+                    </div>
+                    <div class="arena-size-option" id="huge-arena-btn-single" data-size="huge">
+                        <div class="size-square huge-square"></div>
+                        <span>Huge</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="backButton" class="gamemode-btn">Back</button>
+    </div>
+    
+    <div id="credits-menu" style="display: none;">
+        <div id="credits-content">
+            <div id="credits-text">
+                <div class="credits-track">
+                    <!-- Single Group (scroll once, then clear) -->
+                    <div class="credits-group">
+                        <div class="credits-section">
+                            <div class="credits-title">Creator</div>
+                            <div class="credits-name">@flynnwhite</div>
+                        </div>
+                        <div class="credits-section">
+                            <div class="credits-title">Main inspiration/main weapon creator</div>
+                            <div class="credits-name">Earclacks</div>
+                        </div>
+                        <div class="credits-section">
+                            <div class="credits-title">First Supporter</div>
+                            <div class="credits-name">@kodaluna</div>
+                        </div>
+                        <div class="credits-section">
+                            <div class="credits-title">Music producer</div>
+                            <div class="credits-name">@flynnwhite</div>
+                        </div>
+                        <div class="credits-section">
+                            <div class="credits-title">Thumbnail creator</div>
+                            <div class="credits-name">@flynnwhite</div>
+                        </div>
+                        <div class="credits-section">
+                            <div class="credits-title">Software used</div>
+                            <div class="credits-name">Websim, Photoshop, BeepBox, ElevenLabs, ChatGPT</div>
+                        </div>
+                        <div class="credits-section" style="padding-top: 120px;">
+                            <div class="credits-title">And thank you, dear user, for playing!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="creditsBackButton" class="menu-back-button">Back</button>
+    </div>
+
+    <div id="leaderboard-menu" style="display: none;">
+        <div id="leaderboard-content">
+            <h1>Leaderboard</h1>
+            <div id="leaderboard-list">
+                <div class="leaderboard-loading">Loading leaderboard...</div>
+            </div>
+        </div>
+        <button id="leaderboardBackButton" class="menu-back-button">Back</button>
+    </div>
+
+    <!-- NEW: How To Play modal page -->
+    <div id="howto-menu" style="display: none;">
+        <h1 id="howto-title">How to Play</h1>
+        <div id="howto-content">
+            <div class="howto-section">
+                <h2>Basics</h2>
+                <ul>
+                    <li>Pick a weapon on the left and right to set up a 1v1 in Classic.</li>
+                    <li>Press Play to start or pause. Spacebar also toggles Play/Pause.</li>
+                    <li>Use - and + to zoom the whole game view.</li>
+                    <li>Toggle Gravity with the Gravity button (on by default in Classic).</li>
+                    <li>Drag a ball on the arena to reposition it before or during a match.</li>
+                </ul>
+            </div>
+            <div class="howto-section">
+                <h2>Controls</h2>
+                <ul>
+                    <li>Play/Pause: Click Play or press Spacebar</li>
+                    <li>Reset: Resets the match while keeping selections</li>
+                    <li>Zoom: Use the - and + buttons under Play/Reset</li>
+                    <li>Hide/Show UI: Hide UI hides sidebars and controls. Show UI restores everything except the Boss sidebar in Boss mode (it stays hidden).</li>
+                    <li>Horizontal Velocity: Toggle to allow or suppress horizontal movement (affects all balls).</li>
+                    <li>Drag: Click/touch and hold a ball to move it; release to restore its momentum</li>
+                </ul>
+            </div>
+            <div class="howto-section">
+                <h2>Gamemodes</h2>
+                <ul>
+                    <li><strong>Classic</strong>: 1v1 duel. Gravity ON by default.</li>
+                    <li><strong>Free for All</strong>: Add up to 30 fighters. Pick any mix of weapons.</li>
+                    <li><strong>Teams</strong>: Blue vs Red squads. Add fighters to each side.</li>
+                    <li><strong>Boss Fight</strong>: A single giant Red boss with 5000 HP vs Blue team. Slower, much larger. Available only on Large or Huge arenas.</li>
+                </ul>
+            </div>
+            <div class="howto-section">
+                <h2>Arena Sizes</h2>
+                <ul>
+                    <li><strong>Small / Medium / Large / Huge</strong>: Pick from Gamemodes menu.</li>
+                    <li><strong>Shrinking</strong> (FFA/Teams only): Starts Huge and shrinks over time. The shrinking begins after you press Play.</li>
+                </ul>
+            </div>
+            <div class="howto-section">
+                <h2>Weapons</h2>
+                <ul>
+                    <li><strong>Basic</strong>: A simple ball with no weapon.</li>
+                    <li><strong>Sword</strong>: Increases damage on hit; can parry; grants brief immunity on hit.</li>
+                    <li><strong>Dagger</strong>: Very fast spinner; short mini-cooldown between hits.</li>
+                    <li><strong>Spear</strong>: Grows damage and range with each hit.</li>
+                    <li><strong>Bow</strong>: Fires arrows that accelerate as more are active; bow and arrow tips can be parried/deflected.</li>
+                    <li><strong>Scythe</strong>: On hit, applies 1 poison stack to the opponent. Every 5 seconds, poison deals damage equal to current stacks and makes the opponent flash purple.</li>
+                    <li><strong>Shuriken</strong>: Throws bouncing stars; gains more bounces on hit; projectiles can be deflected.</li>
+                    <li><strong>Unarmed</strong>: Your body is the weapon; charges speed over time and slams into foes.</li>
+                    <li><strong>Crusher</strong>: No separate weapon. A heavy, oversized ball that can instantly crush enemies against arena walls or corners when pressing them into the edge.</li>
+                    <li><strong>Grower</strong>: Slowly grows in size; contact damage scales up. At max size it explodes, heavily damaging nearby foes.</li>
+                    <li><strong>Shrinker</strong>: Gradually shrinks, becoming faster; contact damage scales with size. Shrinks to 0 to pop and die.</li>
+                    <li><strong>Axe</strong>: Heavy hit applies a short stun and a bleed that deals periodic damage for several seconds.</li>
+                    <li><strong>Staff</strong>: Cycles magic modes (forcefield, expand, shrink, shadow, poison) that change defense, size, speed, and on-hit effects.</li>
+                    <li><strong>SpeedBall</strong>: No external weapon; gains speed on wall bounces. At high speed it periodically zaps the nearest enemy with lightning.</li>
+                    <li><strong>Duplicator</strong>: Duplicates on wall bounces (clones are basic, smaller, and capped in total count).</li>
+                    <li><strong>Dummy Ball</strong>: A training ball with infinite health.</li>
+                    <li><strong>AK‑47</strong>: Spins and fires fast bullets; bullets vanish on hit and can be parried/deflected by some weapons.</li>
+                    <li><strong>Fuse</strong>: Combines two weapons into one; both sub-weapons act together and their effects stack conservatively.</li>
+                    <li><strong>Custom (AI)</strong>: Use AI Maker to generate and save your own melee or projectile weapon, complete with an AI icon and gallery sharing.</li>
+                </ul>
+            </div>
+            <div class="howto-section">
+                <h2>Tips</h2>
+                <ul>
+                    <li>Parries occur when two weapons meet while facing each other.</li>
+                    <li>Projectiles can be deflected by weapon collisions.</li>
+                    <li>Try different arena sizes and gravity settings for varied gameplay.</li>
+                </ul>
+            </div>
+        </div>
+        <button id="howtoBackButton" class="menu-back-button">Back</button>
+    </div>
+
+    <!-- NEW: Customizer modal -->
+    <div id="customizer-menu" style="display:none;">
+        <div id="customizer-card">
+            <h2>Customizer</h2>
+            <div class="customizer-row">
+                <label for="custom-target">Target</label>
+                <select id="custom-target">
+                    <option value="auto">Auto (mode-based)</option>
+                    <option value="left">Left (P1)</option>
+                    <option value="right">Right (P2)</option>
+                    <option value="blue">Blue Team</option>
+                    <option value="red">Red Team</option>
+                    <option value="all">All Fighters</option>
+                </select>
+            </div>
+            <!-- NEW: Weapon Maker section -->
+            <hr />
+            <div class="customizer-row">
+                <label for="custom-weapon">Weapon</label>
+                <select id="custom-weapon">
+                    <!-- populated by script -->
+                </select>
+            </div>
+            <div class="customizer-actions">
+                <button id="apply-weapon-btn" title="Apply weapon to target(s)">Apply Weapon</button>
+            </div>
+            <hr />
+            <div class="customizer-row">
+                <label for="custom-color">Color</label>
+                <input id="custom-color" type="text" placeholder="#ffffff or named color" />
+            </div>
+            <div class="customizer-row">
+                <label for="custom-radius">Radius</label>
+                <input id="custom-radius" type="number" min="10" max="200" placeholder="e.g. 35" />
+            </div>
+            <div class="customizer-actions">
+                <button id="apply-ball-btn" title="Apply color/radius to target">Apply Ball</button>
+            </div>
+            <hr />
+            <div class="customizer-row">
+                <label for="custom-health">Health</label>
+                <input id="custom-health" type="number" min="1" max="100000" placeholder="e.g. 100" />
+            </div>
+            <div class="customizer-actions">
+                <button id="apply-health-btn" title="Apply health to target">Apply Health</button>
+            </div>
+            <button id="customizer-close" class="customizer-close-btn">Close</button>
+            <div class="customizer-note">
+                Tips:
+                <ul>
+                    <li>Auto target adapts to your current mode.</li>
+                    <li>Radius updates mass automatically. Some weapons may further adjust speed.</li>
+                    <li>Boss health text scales with size; large values are OK.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: AI Weapon Maker modal -->
+    <div id="ai-maker-menu" style="display:none;">
+      <div id="ai-maker-card">
+        <h2>AI Weapon Maker</h2>
+        <div class="ai-maker-row">
+          <label for="ai-weapon-name">Name</label>
+          <input id="ai-weapon-name" type="text" placeholder="e.g. Stormblade">
+        </div>
+        <div class="ai-maker-row">
+          <label for="ai-archetype">Archetype</label>
+          <select id="ai-archetype">
+            <option value="melee">Melee (spinning blade)</option>
+            <option value="projectile">Projectile (shoots shots)</option>
+          </select>
+        </div>
+        <div class="ai-maker-row">
+          <label for="ai-prompt">Describe behavior</label>
+          <textarea id="ai-prompt" rows="3" placeholder="e.g. A fast blade that reverses on hit and briefly stuns foes"></textarea>
+        </div>
+        <div class="ai-maker-actions">
+          <button id="ai-generate-btn">Generate</button>
+          <button id="ai-save-btn" disabled>Save</button>
+          <button id="ai-close-btn">Close</button>
+        </div>
+        <h3>Preview</h3>
+        <div class="ai-preview" id="ai-preview">{ waiting for generation }</div>
+        <div class="ai-maker-row">
+          <label>Image</label>
+          <img id="ai-image-preview" alt="weapon" style="width:72px;height:72px;image-rendering:pixelated;border:2px solid #000;border-radius:8px;background:#fff;">
+        </div>
+        <h3>User Gallery</h3>
+        <div class="ai-gallery" id="ai-gallery">
+          <div class="ai-gallery-empty">No custom weapons yet. Generate and save one!</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "@websim/use-query": "https://esm.websim.com/@websim/use-query",
+            "@websim/websim-socket": "https://esm.websim.com/@websim/websim-socket"
+          }
+        }
+    </script>
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
