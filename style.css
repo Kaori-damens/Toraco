@@ -2115,3 +2115,677 @@ canvas#gameCanvas {
   transition: opacity 0.2s, border-color 0.15s;
 }
 .asset-editor-btn:hover { opacity: 0.85; border-color: #7777ff; }
+
+
+/* ================================================================
+   ✦ MEDIEVAL DARK FANTASY THEME — ALL 3 PHASES
+   Reverse: copy style-neon.css → style.css
+   ================================================================ */
+
+/* ── PHASE 1: FOUNDATION — Palette + Font ── */
+
+/* CSS Variables for easy tuning */
+:root {
+  --m-bg:        #0e0a06;   /* deepest background */
+  --m-panel:     #1a1108;   /* panel/card base */
+  --m-surface:   #241808;   /* elevated surface */
+  --m-raised:    #2e2010;   /* highlighted surface */
+  --m-border:    #4a3820;   /* border/divider */
+  --m-border-lo: #2e2010;   /* subtle border */
+  --m-gold:      #c9902a;   /* primary gold accent */
+  --m-gold-lt:   #e8c87a;   /* light gold / parchment */
+  --m-crimson:   #8b1a1a;   /* blood red */
+  --m-crimson-lt:#cc3333;   /* brighter crimson */
+  --m-forest:    #5a8c3a;   /* earth green */
+  --m-ember:     #cc5500;   /* fire/ember orange */
+  --m-text:      #e8d5a0;   /* parchment cream */
+  --m-text-sec:  #b8a070;   /* aged ink */
+  --m-text-dim:  #7a6040;   /* faded ink */
+  --m-text-lo:   #5a4025;   /* barely visible */
+}
+
+/* Body */
+body {
+  background: var(--m-bg);
+  color: var(--m-text);
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+}
+
+/* Cinzel for all headings / titles / labels / buttons */
+.game-title, .roster-title, .cg-header,
+.battle-card-title, .stats-modal-name, .sc-name, .hero-name,
+.fpm-header-title, .t-section-label, .bracket-round-label,
+.menu-tab, .start-btn, .spin-btn, .cg-btn, .r-btn, .g-btn,
+.a-btn, .t-btn, .t-size-btn, .t-sel-btn, .rc-add, .rc-stats-btn,
+.roster-io-btn, .import-action-btn, .sc-tab,
+#match-timer, #qc-name-box h3, #battle-log-box h3,
+#stats-log-header h3, .smo-collapse-header,
+.bo3-r-score, #bo3-score,
+.r-title, .r-stats, .cg-result-box {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+/* ── GAME TITLE ── */
+.game-title {
+  color: var(--m-gold-lt);
+  text-shadow: 0 0 18px rgba(139,105,20,0.7), 0 0 45px rgba(90,60,0,0.4);
+  letter-spacing: 5px;
+}
+.game-subtitle {
+  color: var(--m-text-dim);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+}
+
+/* ── PHASE 2: COMPONENTS ── */
+
+/* Body background for all screens */
+body, #menu, #game, #chargen, #result,
+#screen-asset-editor {
+  background-color: var(--m-bg);
+}
+
+/* ── PANELS & CARDS ── */
+.fighter-card {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+}
+.fighter-card:hover { border-color: var(--m-border); }
+
+.roster-card {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+}
+.rc-name { color: var(--m-text); }
+.rc-race { color: var(--m-text-dim); }
+.rc-s    { background: var(--m-surface); }
+.rc-sl   { color: var(--m-text-lo); }
+.rc-sv   { color: var(--m-gold); }
+.rc-weapon   { color: var(--m-gold); }
+.rc-total    { border-top-color: var(--m-border-lo); color: var(--m-text-dim); }
+.rc-total-val { color: var(--m-gold); }
+.rc-title-badge { background: var(--m-surface); }
+.rc-cb       { background: #120c04; border-color: var(--m-border-lo); }
+.rc-cb-lbl   { color: var(--m-text-dim); }
+
+/* ── BUTTONS ── */
+
+/* Primary action — iron/stone emboss */
+.start-btn {
+  background: linear-gradient(180deg, #5a3a10 0%, #3a2208 45%, #2a1808 55%, #4a3015 100%);
+  color: var(--m-gold-lt);
+  border: 2px solid #8b6914;
+  box-shadow:
+    0 5px 22px rgba(100,70,0,0.45),
+    inset 0 1px 0 rgba(232,200,122,0.22),
+    inset 0 -2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  letter-spacing: 4px;
+  border-radius: 8px;
+}
+.start-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #6a4a18 0%, #4a2a10 45%, #3a1e0a 55%, #5a3820 100%);
+  box-shadow:
+    0 7px 28px rgba(140,100,0,0.5),
+    inset 0 1px 0 rgba(232,200,122,0.28),
+    inset 0 -2px 4px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
+}
+.start-btn:disabled {
+  background: #1e1408;
+  color: var(--m-text-lo);
+  border-color: #2a1e0a;
+  box-shadow: none;
+}
+
+/* Spin button */
+.spin-btn {
+  background: linear-gradient(180deg, #5a3a10, #3a2208);
+  border: 1px solid #8b6914;
+  color: var(--m-gold-lt);
+  box-shadow: 0 3px 12px rgba(100,70,0,0.35), inset 0 1px 0 rgba(232,200,122,0.18);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  border-radius: 20px;
+}
+.spin-btn:hover { background: linear-gradient(180deg, #6a4a18, #4a2a10); opacity: 1; }
+
+/* Tournament / chargen / generic buttons */
+.t-btn {
+  background: linear-gradient(180deg, #381818, #1e0a0a);
+  border: 2px solid var(--m-crimson);
+  color: #e8b0a0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+}
+.t-btn:hover {
+  background: linear-gradient(180deg, #4a2020, #2a1010);
+  color: #f0c8b8; transform: translateY(-1px);
+}
+
+.cg-btn {
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  color: var(--m-text-sec);
+}
+.cg-btn:hover { background: var(--m-raised); }
+.cg-btn.primary {
+  background: linear-gradient(180deg, #4a6a2a, #2a4010);
+  border: 1px solid #5a8c3a;
+  color: #c8e8a8;
+}
+.cg-btn.primary:hover { opacity: 0.9; }
+
+.g-btn {
+  border-color: var(--m-border-lo);
+  background: var(--m-panel);
+  color: var(--m-text-sec);
+}
+.g-btn:hover { background: var(--m-surface); color: var(--m-text); }
+
+.a-btn {
+  border-color: var(--m-border-lo);
+  background: var(--m-panel);
+  color: var(--m-text-sec);
+}
+.a-btn:hover  { background: var(--m-surface); color: var(--m-text); }
+.a-btn.sel    { border-color: var(--m-forest); background: #0a1a08; color: var(--m-forest); }
+
+.r-btn {
+  border-color: var(--m-border-lo);
+  background: #120c04;
+  color: var(--m-text-sec);
+}
+.r-btn:hover { background: var(--m-surface); color: var(--m-text); }
+.r-btn.primary {
+  background: linear-gradient(180deg, #5a3a10, #3a2208);
+  color: var(--m-gold-lt);
+  border: 2px solid #8b6914;
+  box-shadow: inset 0 1px 0 rgba(232,200,122,0.2);
+}
+.r-btn.primary:hover { opacity: 0.9; }
+.r-btn.gold { border-color: #8b6914; color: var(--m-gold); }
+.r-btn.gold:hover { background: var(--m-surface); }
+
+.rc-add { background: var(--m-forest); color: #e8f4d8; border-radius: 5px; }
+.rc-add:hover { opacity: 0.85; }
+
+.rc-stats-btn {
+  background: var(--m-surface);
+  border-color: var(--m-border);
+  color: var(--m-gold);
+}
+.rc-stats-btn:hover { background: var(--m-raised); }
+
+.t-size-btn {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+  color: var(--m-text-dim);
+}
+.t-size-btn.sel {
+  border-color: var(--m-crimson);
+  background: #240a0a;
+  color: #e8b0a0;
+}
+
+.t-sel-btn {
+  border-color: var(--m-border-lo);
+  background: var(--m-panel);
+  color: var(--m-text-dim);
+}
+.t-sel-btn:hover { background: var(--m-raised); color: var(--m-text-sec); }
+
+.roster-io-btn {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+  color: var(--m-text-dim);
+}
+.roster-io-btn:hover { background: var(--m-surface); color: var(--m-text-sec); border-color: var(--m-border); }
+.roster-io-btn.export-btn:hover { color: #a8d880; border-color: rgba(90,140,58,0.6); }
+.roster-io-btn.import-btn:hover { color: var(--m-gold-lt); border-color: rgba(201,144,42,0.6); }
+
+/* Create char buttons */
+.create-char-btn {
+  background: linear-gradient(135deg, #6a2060, #b81848);
+}
+.quick-create-btn {
+  background: linear-gradient(135deg, #7a3000, #c9902a);
+  color: var(--m-text);
+}
+
+/* Arena row label */
+.arena-row label { color: var(--m-text-dim); }
+
+/* Weapon card buttons */
+.wc-btn {
+  border-color: var(--m-border-lo);
+  background: #120c04;
+  color: var(--m-text-dim);
+}
+.wc-btn:hover  { background: var(--m-surface); border-color: var(--m-border); }
+.wc-btn.sel    { border-color: var(--m-gold); background: var(--m-surface); box-shadow: 0 0 5px rgba(201,144,42,0.4); }
+
+.remove-btn { color: var(--m-text-lo); }
+.remove-btn:hover { color: var(--m-crimson-lt); }
+
+.add-fighter-card {
+  border-color: var(--m-border-lo);
+  color: var(--m-text-lo);
+}
+.add-fighter-card span { color: var(--m-text-lo); }
+.add-fighter-card:hover {
+  border-color: var(--m-gold);
+  color: var(--m-gold);
+  background: #1a1008;
+}
+.add-fighter-card:hover span { color: var(--m-gold); }
+
+/* ── MODALS & PANELS ── */
+#fighter-picker-panel {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+}
+.fpm-header { border-bottom-color: var(--m-border-lo); }
+.fpm-header-title { color: var(--m-gold-lt); }
+.fpm-close-btn { border-color: var(--m-border-lo); color: var(--m-text-dim); }
+.fpm-close-btn:hover { border-color: var(--m-text-sec); color: var(--m-text-sec); }
+.fpm-radoser-card { background: var(--m-surface); border-color: var(--m-border-lo); }
+.fpm-radoser-card:hover { background: var(--m-panel); transform: translateY(-1px); }
+.fpm-meta { color: var(--m-text-lo); }
+.fpm-add-tag { color: var(--m-gold); border-color: rgba(139,105,20,0.7); }
+.fpm-section-lbl { color: var(--m-text-lo); }
+.fpm-bot-card { border-color: var(--m-border-lo); color: var(--m-text-lo); }
+.fpm-bot-card:hover { border-color: var(--m-border); color: var(--m-text-dim); }
+.fpm-empty { color: var(--m-text-lo); }
+
+.stats-modal-box {
+  background: #140f08;
+  border: 1px solid var(--m-border);
+  box-shadow: 0 0 30px rgba(100,80,0,0.3);
+}
+.stats-modal-close { color: var(--m-text-dim); }
+.stats-modal-close:hover { color: var(--m-crimson-lt); }
+.stats-modal-name { color: var(--m-gold-lt); }
+.stats-modal-race { color: var(--m-text-dim); }
+.stats-modal-row  { background: var(--m-surface); }
+.stats-modal-lbl  { color: var(--m-text-dim); }
+.stats-modal-val  { color: var(--m-gold); }
+.stats-modal-weapon { color: var(--m-gold); border-top-color: var(--m-border-lo); }
+.stats-modal-drow   { background: var(--m-panel); }
+.stats-modal-dlbl   { color: var(--m-text-dim); }
+
+.smo-collapse-header { color: var(--m-text-dim); border-top-color: var(--m-border-lo); }
+.smo-collapse-header:hover { background: var(--m-surface); color: var(--m-text-sec); }
+#smo-derived-toggle { border-top-color: var(--m-border-lo); }
+
+.smo-skill-card {
+  background: color-mix(in srgb, var(--sc,#5a3a00) 10%, var(--m-surface));
+  border-color: color-mix(in srgb, var(--sc,#8b6914) 28%, transparent);
+}
+.smo-skill-name { color: var(--sc, var(--m-gold-lt)); }
+.smo-skill-desc { color: var(--m-text-dim); }
+
+.import-modal-box {
+  background: var(--m-panel);
+  border: 1px solid var(--m-border);
+  box-shadow: 0 0 30px rgba(80,50,0,0.3);
+}
+.import-modal-close { color: var(--m-text-dim); }
+.import-modal-close:hover { color: var(--m-crimson-lt); }
+.import-modal-title { color: var(--m-gold-lt); }
+.import-file-label { border-color: var(--m-border); color: var(--m-text-dim); }
+.import-file-label:hover { border-color: var(--m-gold); color: var(--m-text-sec); }
+.import-preview { background: #0a1408; border-color: #3a5a20; color: #88cc66; }
+.import-action-btn { background: var(--m-surface); border-color: var(--m-border); color: var(--m-text-sec); }
+.import-action-btn.merge:hover   { background: #1a1808; border-color: var(--m-gold); color: var(--m-gold-lt); }
+.import-action-btn.replace:hover { background: #1a0808; border-color: var(--m-crimson-lt); color: #ff9090; }
+.import-hint { color: var(--m-text-lo); }
+.import-error { background: #1a0808; border-color: #5a2020; color: #ff7777; }
+
+.tab-footer-btns { border-top-color: var(--m-border-lo); }
+
+#qc-name-modal { background: rgba(0,0,0,0.72); }
+#qc-name-box {
+  background: var(--m-panel);
+  border-color: var(--m-border);
+}
+#qc-name-box h3 { color: var(--m-gold); }
+#qc-name-input {
+  background: #120c04;
+  border-color: var(--m-border-lo);
+  color: var(--m-text);
+}
+#qc-name-input:focus { border-color: var(--m-gold); }
+#qc-name-input::placeholder { color: var(--m-text-lo); }
+#qc-confirm-btn { background: linear-gradient(135deg, #7a3000, #c9902a); color: var(--m-text); }
+#qc-cancel-btn { border-color: var(--m-border-lo); color: var(--m-text-dim); }
+#qc-cancel-btn:hover { border-color: var(--m-border); color: var(--m-text-sec); }
+
+/* Battle cards (choose mode) */
+.battle-card {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+}
+.battle-card-title { color: var(--m-text); }
+.battle-card-desc  { color: var(--m-text-dim); }
+.tournament-battle-card {
+  border-color: var(--m-crimson);
+  background: linear-gradient(135deg, var(--m-panel), #1e0a0a);
+}
+
+/* ── HP BAR ── */
+.hp-track { background: #1a0808; }
+.hp-fraction { color: var(--m-text-sec); }
+.hud-scale-tag { color: var(--m-text-dim); }
+.hud-card {
+  background: rgba(20,14,6,0.92);
+  border-color: var(--m-border-lo);
+}
+.hud-card-name .wep-sub { color: var(--m-text-dim); }
+
+/* ── SKILL BADGES ── */
+.hud-skill-badge {
+  background: #180e06;
+  border-color: #3a2a15;
+  color: var(--m-text-lo);
+  font-family: 'EB Garamond', Georgia, serif;
+}
+
+/* Passive — amber candlelight */
+.hud-skill-badge.always-active {
+  color: var(--skill-color, var(--m-gold-lt));
+  border-color: color-mix(in srgb, var(--skill-color, #8b6914) 60%, transparent);
+  background: color-mix(in srgb, var(--skill-color, #5a3a00) 14%, #1a1008);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--skill-color, #c9902a) 35%, transparent);
+}
+
+/* Skill flash animation — metal sheen */
+@keyframes skillBadgeActivate {
+  0%   { transform: scale(0.85);
+         color: var(--m-text-lo); border-color: #3a2a15; background: #180e06;
+         box-shadow: none; }
+  10%  { transform: scale(1.15); }
+  22%  { transform: scale(1);
+         color: var(--skill-color, var(--m-gold));
+         border-color: color-mix(in srgb, var(--skill-color, #8b6914) 75%, transparent);
+         background: color-mix(in srgb, var(--skill-color, #5a3a00) 18%, #1a1008);
+         box-shadow: 0 0 12px color-mix(in srgb, var(--skill-color, var(--m-gold)) 60%, transparent); }
+  70%  { color: var(--skill-color, var(--m-gold));
+         border-color: color-mix(in srgb, var(--skill-color, #8b6914) 65%, transparent);
+         background: color-mix(in srgb, var(--skill-color, #5a3a00) 14%, #1a1008);
+         box-shadow: 0 0 8px color-mix(in srgb, var(--skill-color, var(--m-gold)) 38%, transparent); }
+  100% { transform: scale(1);
+         color: var(--m-text-lo); border-color: #3a2a15; background: #180e06;
+         box-shadow: none; }
+}
+
+/* Passive pop animation */
+@keyframes skillBadgePassivePop {
+  0%   { transform: scale(0.7); opacity: 0.3; }
+  55%  { transform: scale(1.13); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── CANVAS + GAME UI ── */
+canvas#gameCanvas {
+  border: 2px solid #3a2a15;
+  border-radius: 4px;
+}
+
+#match-info-bar {
+  background: #0c0804;
+  border-color: var(--m-border-lo);
+}
+#match-timer { color: var(--m-gold); }
+#match-timer.overtime { color: var(--m-crimson-lt); }
+#overtime-label { color: var(--m-crimson-lt); }
+#bo3-score { color: var(--m-text); }
+#bo3-f1-name, #bo3-f2-name { color: var(--m-text-sec); }
+#bo3-pips span, #bo3-pips-r span { background: var(--m-raised); border-color: var(--m-border); }
+#bo3-pips span.won, #bo3-pips-r span.won {
+  background: var(--m-gold);
+  border-color: var(--m-gold);
+  box-shadow: 0 0 6px rgba(201,144,42,0.7);
+}
+
+/* ── RESULT SCREEN ── */
+.r-title.blue { color: var(--m-gold-lt); text-shadow: 0 0 25px rgba(201,144,42,0.6); }
+.r-title.red  { color: var(--m-crimson-lt); text-shadow: 0 0 25px rgba(139,26,26,0.7); }
+.r-title.draw { color: var(--m-text-sec); text-shadow: 0 0 20px rgba(100,80,40,0.5); }
+.r-stats {
+  background: var(--m-panel);
+  border-color: var(--m-border-lo);
+  color: var(--m-text-dim);
+}
+.r-stats strong { color: var(--m-text); }
+.bo3-result-row { }
+.bo3-r-name { color: var(--m-text-sec); }
+.bo3-r-score { color: var(--m-text); }
+.bo3-game-label { color: var(--m-text-dim); }
+
+/* ── TOURNAMENT ── */
+.t-roster-list  { background: #0c0804; border-color: var(--m-border-lo); }
+.t-roster-card  { background: var(--m-panel); border-color: var(--m-border-lo); }
+.t-roster-card:hover { border-color: var(--m-border); background: var(--m-surface); }
+.t-roster-card.selected { border-color: var(--m-forest); background: #0a1a08; }
+.t-roster-card.full-not-selected:hover { border-color: var(--m-border-lo); background: var(--m-panel); }
+.t-card-check { border-color: var(--m-border); }
+.t-roster-card.selected .t-card-check {
+  background: var(--m-forest); border-color: var(--m-forest);
+  box-shadow: 0 0 6px rgba(90,140,58,0.5);
+}
+.t-slot-summary { background: #0c0804; border-color: var(--m-border-lo); }
+.t-summary-bot  { color: var(--m-text-lo); }
+.t-roster-empty { color: var(--m-text-lo); }
+
+/* ── BRACKET ── */
+.bracket-round-label { color: var(--m-text-dim); letter-spacing: 1.5px; }
+.bracket-match { background: var(--m-panel); border-color: var(--m-border-lo); }
+.bracket-match.current { border-color: var(--m-crimson); box-shadow: 0 0 12px rgba(139,26,26,0.3); }
+.bracket-player.winner { background: #0a1a08; color: var(--m-forest); }
+.bracket-score { color: var(--m-text-dim); }
+
+/* ── MENU TABS ── */
+.menu-tabs { border-bottom-color: var(--m-border-lo); }
+.menu-tab { color: var(--m-text-lo); font-size: 13px; letter-spacing: 0.8px; }
+.menu-tab:hover { color: var(--m-text-sec); }
+.menu-tab.active { color: var(--m-gold); border-bottom-color: var(--m-gold); }
+.menu-tab-pane { }
+.tab-footer-btns { border-top-color: var(--m-border-lo); }
+
+/* Fighters panel */
+.fighters-header { color: var(--m-text-dim); }
+.roster-header   { border-top-color: var(--m-border-lo); border-bottom-color: var(--m-border-lo); }
+.roster-title    { color: var(--m-gold); text-shadow: 0 0 10px rgba(139,100,0,0.35); }
+.roster-empty    { color: var(--m-text-lo); }
+.rc-actions      { }
+
+/* ── CHARGEN ── */
+.cg-header {
+  background: linear-gradient(90deg, #8b6914, #e8c87a, #c9902a, #e8c87a, #8b6914);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+.cg-dot        { background: #3a2a15; }
+.cg-dot.done   { background: var(--m-forest); }
+.cg-dot.active { background: var(--m-gold); box-shadow: 0 0 7px var(--m-gold); }
+
+.cg-card {
+  background: var(--m-panel);
+  border-color: var(--m-border);
+}
+.cg-label { color: var(--m-text-dim); font-family: 'Cinzel', Georgia, serif; }
+.cg-name-input {
+  background: #120c04;
+  border-color: var(--m-border);
+  color: var(--m-text);
+  font-family: 'Cinzel', Georgia, serif;
+}
+.cg-name-input:focus { border-color: var(--m-gold); }
+.cg-random-btn { background: linear-gradient(135deg, #8b3a00, #8b1a1a); }
+.cg-result-box { background: #1a1408; border-color: var(--m-gold); color: var(--m-gold-lt); }
+.cg-trait {
+  background: #1a1008;
+  border-color: rgba(201,144,42,0.22);
+  color: var(--m-text-dim);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+}
+.cg-skill-tag  { background: #1a1008; border-color: rgba(139,105,20,0.4); color: var(--m-text-sec); }
+
+.cg-sc      { background: #1a1008; border-color: #3a2a15; }
+.cg-sc.cg-active { border-color: var(--m-gold); background: var(--m-surface); }
+.cg-sc.cg-done   { border-color: rgba(90,140,58,0.4); }
+.cg-sc-lbl  { color: var(--m-text-dim); }
+.cg-sc-val  { color: var(--m-gold); }
+.cg-sc-val.cg-pending { color: #3a2a15; }
+
+.cg-summary { background: #120c04; border-color: #3a2a15; }
+.cg-sum-lbl { color: var(--m-text-dim); }
+.cg-sum-val { color: var(--m-text-sec); }
+
+/* Spin pointer — gold blade */
+.spin-ptr {
+  border-top-color: var(--m-gold);
+  filter: drop-shadow(0 0 6px rgba(201,144,42,0.85));
+}
+
+/* ── SHOWCASE / HERO CARD ── */
+.hero-card {
+  background: linear-gradient(135deg, var(--m-panel), var(--m-surface));
+  border-color: var(--m-border);
+}
+.hero-name { color: var(--m-text); }
+.hero-race { color: var(--m-text-dim); }
+.hero-stat { background: var(--m-raised); }
+.hero-stat-lbl { color: var(--m-text-dim); }
+.hero-stat-val { color: var(--m-gold); }
+.hero-weapon   { color: var(--m-gold); }
+.hero-showcase-empty { color: var(--m-text-lo); }
+
+.showcase-card {
+  background: linear-gradient(160deg, var(--m-panel) 60%, var(--m-surface));
+  border: 1px solid var(--m-border);
+}
+.sc-section-lbl { color: var(--m-text-lo); }
+.sc-stat-box { background: var(--m-surface); }
+.sc-stat-lbl { color: var(--m-text-dim); }
+.sc-stat-val { color: var(--m-gold); font-family: 'Cinzel', Georgia, serif; }
+.sc-race-line { color: var(--m-text-dim); }
+.sc-divider   { background: var(--m-raised); }
+.sc-weapon-row { color: var(--m-gold); }
+.sc-drow  { background: var(--m-surface); }
+.sc-dlbl  { color: var(--m-text-dim); }
+.sc-dval  { color: var(--m-text-sec); }
+.showcase-empty { color: var(--m-text-lo); }
+
+.sc-nav-btn { border-color: #3a2a15; color: var(--m-text-dim); }
+.sc-nav-btn:hover { border-color: var(--m-gold); color: var(--m-gold); }
+.sc-dot { background: #3a2a15; }
+.sc-dot.active { background: var(--m-gold); }
+
+/* ── PHASE 3: POLISH ── */
+
+/* ── BATTLE LOG — Live (in-game) ── */
+#live-log-header {
+  background: rgba(12,8,4,0.85);
+  border-color: #3a2a15;
+  color: var(--m-text-dim);
+}
+#live-log-entries { background: transparent; }
+.log-line {
+  background: rgba(10,6,2,0.65);
+  color: var(--m-text-sec);
+  border-left-color: #4a3820;
+  border-bottom-color: rgba(255,255,255,0.02);
+  font-family: 'EB Garamond', Georgia, serif;
+}
+.log-time { color: var(--m-text-lo); }
+.log-line.type-hit    { border-left-color: #a83020; }
+.log-line.type-crit   { border-left-color: var(--m-gold); color: var(--m-gold-lt); }
+.log-line.type-evade  { border-left-color: var(--m-forest); color: #a8d880; }
+.log-line.type-parry  { border-left-color: var(--m-gold); color: var(--m-gold-lt); }
+.log-line.type-parry_fists { border-left-color: #cc6633; color: #e8b888; }
+.log-line.type-proj   { border-left-color: #884488; }
+.log-line.type-proj_crit  { border-left-color: var(--m-gold); color: var(--m-gold-lt); }
+.log-line.type-proj_evade { border-left-color: var(--m-forest); color: #a8d880; }
+
+/* ── BATTLE LOG — Modal (post-match) ── */
+#battle-log-box {
+  background: #0f0904;
+  border-color: var(--m-border);
+}
+#battle-log-box h3 { color: var(--m-gold); }
+.blog-line { border-left-color: #3a2a15; font-family: 'EB Garamond', Georgia, serif; }
+.blog-line:hover { background: rgba(255,220,120,0.04); }
+.blog-time { color: var(--m-text-lo); }
+.blog-text { color: var(--m-text-sec); }
+.blog-line.type-crit   { border-left-color: var(--m-gold); }
+.blog-line.type-evade  { border-left-color: var(--m-forest); }
+.blog-line.type-parry  { border-left-color: var(--m-gold); }
+.blog-line.type-parry_fists { border-left-color: #cc6633; }
+.blog-line.type-proj_crit   { border-left-color: var(--m-gold); }
+.blog-line.type-proj_evade  { border-left-color: var(--m-forest); }
+.blog-line.type-crit .blog-text,
+.blog-line.type-proj_crit .blog-text { color: var(--m-gold-lt); }
+.blog-line.type-evade .blog-text,
+.blog-line.type-proj_evade .blog-text { color: #a8d880; }
+.blog-line.type-parry .blog-text,
+.blog-line.type-parry_fists .blog-text { color: var(--m-gold-lt); }
+#battle-log-close-btn { border-color: var(--m-border-lo); color: var(--m-text-dim); }
+#battle-log-close-btn:hover { border-color: var(--m-border); color: var(--m-text-sec); }
+
+/* Stats log modal */
+#stats-log-box { background: #0f0904; border-color: var(--m-border); }
+#stats-log-header h3 { color: var(--m-gold); }
+.sc-tab { border-color: var(--m-border-lo); color: var(--m-text-dim); }
+.sc-tab:hover { border-color: var(--m-border); color: var(--m-text-sec); }
+.sc-tab.sel { background: var(--m-raised); border-color: var(--m-gold); color: var(--m-gold-lt); }
+#stats-chart-wrap { background: #080503; border-color: var(--m-border-lo); }
+.sc-legend-item { color: var(--m-text-dim); }
+#stats-log-close-btn { border-color: var(--m-border-lo); color: var(--m-text-dim); }
+#stats-log-close-btn:hover { border-color: var(--m-border); color: var(--m-text-sec); }
+
+/* Asset editor */
+#screen-asset-editor { background: #080503; }
+#ae-sidebar-left { background: #0d0b06; border-right-color: var(--m-border-lo); }
+#ae-sidebar-left-header { border-bottom-color: var(--m-border-lo); }
+#ae-race-select { background: var(--m-surface); border-color: var(--m-border-lo); color: var(--m-text-sec); }
+#ae-race-select:focus { border-color: var(--m-gold); }
+#ae-layers-title { color: var(--m-text-lo); }
+.ae-layer-row:hover { background: var(--m-surface); }
+.ae-layer-row.ae-sel { background: #1a1408; border-color: var(--m-border); }
+.ae-layer-name { color: var(--m-text-sec); }
+.ae-layer-vis { color: var(--m-text-lo); }
+.ae-layer-vis:hover { color: var(--m-text-sec); }
+.ae-layer-del { color: var(--m-text-lo); }
+.ae-layer-del:hover { color: var(--m-crimson-lt); }
+#ae-add-toolbar { border-top-color: var(--m-border-lo); }
+#ae-add-toolbar-label { color: var(--m-text-lo); }
+.ae-add-btn {
+  background: var(--m-surface);
+  border-color: var(--m-border-lo);
+  color: var(--m-text-sec);
+}
+.ae-add-btn:hover { background: var(--m-raised); border-color: var(--m-gold); color: var(--m-gold-lt); }
+.ae-add-btn.ae-active-mode { background: #1a1008; border-color: var(--m-gold); color: var(--m-gold-lt); }
+#ae-canvas-wrap { background: #080503; }
+#ae-canvas-title { color: var(--m-text-sec); }
+#ae-spin-label { color: var(--m-text-dim); }
+#ae-canvas { border-color: var(--m-border-lo); }
+.ae-canvas-footer-btn {
+  background: var(--m-surface); border-color: var(--m-border-lo);
+  color: var(--m-text-sec);
+}
+.ae-canvas-footer-btn:hover { background: var(--m-raised); color: var(--m-text); border-color: var(--m-border); }
+#ae-save-btn.has-save { border-color: var(--m-forest); color: #88cc66; }
+#ae-save-btn.has-save:hover { background: #0a1a08; }
+#ae-save-indicator { color: #88cc66; }
+#ae-remove-save-btn { border-color: rgba(88,180,88,0.4); color: #88cc66; }
+
+/* Scrollbar — parchment feel */
+::-webkit-scrollbar       { width: 6px; background: var(--m-panel); }
+::-webkit-scrollbar-track { background: var(--m-panel); }
+::-webkit-scrollbar-thumb { background: var(--m-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--m-gold); }
+
+/* ── END MEDIEVAL THEME ── */

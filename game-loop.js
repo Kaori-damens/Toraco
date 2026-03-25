@@ -262,7 +262,7 @@ function updateBO3Display() {
 
 // ── Skill trigger color by type ── (matches SKILL_DEFS .type values)
 function _skillTriggerColor(type) {
-  return { passive:'#bb88ff', pre_combat:'#ffcc44', in_combat:'#ff6644', post_combat:'#44ccff' }[type] ?? '#8899bb';
+  return { passive:'#e8c87a', pre_combat:'#c9902a', in_combat:'#cc3333', post_combat:'#6aaa44' }[type] ?? '#b8a070';
 }
 
 // ── Flash a skill badge on the fighter's HUD card ──

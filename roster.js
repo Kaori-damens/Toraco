@@ -183,7 +183,7 @@ function showCharStats(idx) {
   if (skillsEl) {
     const ids = ch.skills ?? [];
     if (ids.length > 0) {
-      const TC = { passive:'#bb88ff', pre_combat:'#ffcc44', in_combat:'#ff6644', post_combat:'#44ccff' };
+      const TC = { passive:'#e8c87a', pre_combat:'#c9902a', in_combat:'#cc3333', post_combat:'#6aaa44' };
       const TL = { passive:'Passive', pre_combat:'Pre-Combat', in_combat:'In-Combat', post_combat:'Post-Combat' };
       let cardsHtml = '';
       ids.forEach(sid => {
