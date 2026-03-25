@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "autorpng-battle",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "/Users/khanhnl/Desktop/Wheel/AutoRPNG battle", "-p", "3457", "--no-clipboard"],
+      "port": 3457
+    }
+  ]
+}
