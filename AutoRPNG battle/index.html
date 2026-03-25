@@ -57,7 +57,9 @@
     <div class="stats-modal-race" id="smo-race"></div>
     <div class="stats-modal-grid" id="smo-grid"></div>
     <div class="stats-modal-weapon" id="smo-weapon"></div>
+    <div class="smo-collapse-header" id="smo-derived-toggle">✦ Stats <span class="smo-arrow">▾</span></div>
     <div class="stats-modal-derived" id="smo-derived"></div>
+    <div class="stats-modal-skills" id="smo-skills" style="display:none"></div>
   </div>
 </div>
 
@@ -102,6 +104,32 @@
     <div class="tab-footer-btns">
       <button class="quick-create-btn" id="quickCreateBtn">⚡ Quick Create</button>
       <button class="create-char-btn"  id="createCharBtn">⚗️ Create Character</button>
+      <button class="roster-io-btn export-btn" id="exportRosterBtn">📤 Export</button>
+      <button class="roster-io-btn import-btn" id="importRosterBtn">📥 Import</button>
+    </div>
+  </div>
+
+  <!-- Import Roster Modal -->
+  <div class="modal-backdrop" id="importModal" style="display:none">
+    <div class="import-modal-box">
+      <button class="import-modal-close" id="importModalClose">✕</button>
+      <div class="import-modal-title">📥 Import Radosers</div>
+
+      <label class="import-file-label" id="importFileLabel">
+        <span id="importFileLabelText">📂 Choose JSON file…</span>
+        <input type="file" id="importFileInput" accept=".json" style="display:none">
+      </label>
+
+      <div class="import-preview" id="importPreview" style="display:none">
+        <span id="importPreviewText"></span>
+      </div>
+
+      <div class="import-actions" id="importActions" style="display:none">
+        <button class="import-action-btn merge"   id="importMergeBtn">➕ Merge  <span class="import-hint">add to existing</span></button>
+        <button class="import-action-btn replace" id="importReplaceBtn">🔄 Replace <span class="import-hint">clear &amp; import</span></button>
+      </div>
+
+      <div class="import-error" id="importError" style="display:none"></div>
     </div>
   </div>
 
@@ -195,11 +223,15 @@
   </div>
   <div class="r-stats" id="rStats"></div>
   <div class="r-btns">
-    <button class="r-btn primary" id="rematchBtn">⚔️ Rematch</button>
-    <button class="r-btn primary" id="nextGameBtn" style="display:none">▶ Next Game</button>
-    <button class="r-btn gold"    id="bracketBtn"  style="display:none">🏆 View Bracket</button>
-    <button class="r-btn" id="battleLogBtn"  style="display:none">📋 Battle Log</button>
-    <button class="r-btn" id="statsLogBtn"   style="display:none">📊 Stats</button>
+    <div class="r-btns-main">
+      <button class="r-btn primary" id="rematchBtn">⚔️ Rematch</button>
+      <button class="r-btn primary" id="nextGameBtn" style="display:none">▶ Next Game</button>
+    </div>
+    <button class="r-btn gold r-btn-bracket" id="bracketBtn" style="display:none">🏆 View Bracket</button>
+    <div class="r-btns-secondary">
+      <button class="r-btn" id="battleLogBtn" style="display:none">📋 Battle Log</button>
+      <button class="r-btn" id="statsLogBtn"  style="display:none">📊 Stats</button>
+    </div>
     <button class="r-btn" id="menuBtnR">← Menu</button>
   </div>
 </div>
@@ -340,7 +372,26 @@
   </div>
 </div>
 
-<script src="game.js"></script>
+<script src="audio.js"></script>
+<script src="constants.js"></script>
+<script src="weapons.js"></script>
+<script src="projectile.js"></script>
+<script src="particles.js"></script>
+<script src="arena.js"></script>
+<script src="skills.js"></script>
+<script src="ball.js"></script>
+<script src="collision.js"></script>
+<script src="state.js"></script>
+<script src="game-loop.js"></script>
+<script src="setup.js"></script>
+<script src="result.js"></script>
+<script src="tournament.js"></script>
+<script src="ui.js"></script>
+<script src="chargen-data.js"></script>
+<script src="spin-wheel.js"></script>
+<script src="chargen.js"></script>
+<script src="roster.js"></script>
+<script src="asset-editor.js"></script>
 
 
 </body>

@@ -442,6 +442,65 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* ── HUD skill badges ── */
+/* ── HUD in-combat skill badges ── */
+.hud-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 0;
+}
+.hud-skills:empty { display: none; }
+
+/* Default dim state — skills inactive */
+.hud-skill-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid #22223a;
+  color: #333350;
+  background: #0b0b16;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* Passive — always glowing (steady, no fade) */
+@keyframes skillBadgePassivePop {
+  0%   { transform: scale(0.7); opacity: 0.4; }
+  55%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.hud-skill-badge.always-active {
+  color: var(--skill-color, #aaa);
+  border-color: color-mix(in srgb, var(--skill-color, #556) 65%, transparent);
+  background: color-mix(in srgb, var(--skill-color, #334) 14%, #0d0d20);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--skill-color, #fff) 35%, transparent);
+  animation: skillBadgePassivePop 0.45s ease forwards;
+}
+
+/* Triggered / glowing state */
+@keyframes skillBadgeActivate {
+  0%   { transform: scale(0.85);
+         color: #333350; border-color: #22223a; background: #0b0b16;
+         box-shadow: none; }
+  10%  { transform: scale(1.12); }
+  22%  { transform: scale(1);
+         color: var(--skill-color, #aaa);
+         border-color: color-mix(in srgb, var(--skill-color,#556) 70%, transparent);
+         background: color-mix(in srgb, var(--skill-color,#334) 16%, #0d0d20);
+         box-shadow: 0 0 10px color-mix(in srgb, var(--skill-color,#fff) 55%, transparent); }
+  70%  { color: var(--skill-color, #aaa);
+         border-color: color-mix(in srgb, var(--skill-color,#556) 70%, transparent);
+         background: color-mix(in srgb, var(--skill-color,#334) 16%, #0d0d20);
+         box-shadow: 0 0 8px color-mix(in srgb, var(--skill-color,#fff) 40%, transparent); }
+  100% { transform: scale(1);
+         color: #333350; border-color: #22223a; background: #0b0b16;
+         box-shadow: none; }
+}
+.hud-skill-badge.glowing {
+  animation: skillBadgeActivate 1.5s ease forwards;
+}
+
 /* legacy compat */
 .hud { display: flex; flex-direction: column; gap: 0; width: 800px; }
 .ball-label { font-size: 12px; font-weight: bold; min-width: 100px; }
@@ -841,7 +900,10 @@ canvas#gameCanvas {
 }
 .r-stats strong { color: #fff; }
 
-.r-btns { display: flex; gap: 10px; }
+.r-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.r-btns-main { display: flex; gap: 10px; }
+.r-btns-secondary { display: flex; gap: 10px; }
+.r-btn-bracket { width: 280px; font-size: 19px; padding: 16px 36px; letter-spacing: 0.5px; }
 
 .r-btn {
   padding: 11px 28px;
@@ -894,6 +956,8 @@ canvas#gameCanvas {
 .cg-result-box { background: #0e2a1a; border: 2px solid #44cc88; border-radius: 10px; padding: 12px 28px; text-align: center; font-size: 22px; font-weight: 900; color: #44cc88; min-width: 200px; animation: cgPop .3s ease; }
 @keyframes cgPop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .cg-trait { background: #1a1a2e; border: 1px solid #4488ff44; border-radius: 8px; padding: 10px 16px; font-size: 12px; color: #7a9ac0; text-align: center; max-width: 400px; line-height: 1.6; }
+.cg-skills-picked { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 10px; max-width: 400px; }
+.cg-skill-tag { background: #141430; border: 1px solid #5566cc66; border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #99aadd; cursor: default; }
 .cg-nav { display: flex; gap: 10px; width: 100%; justify-content: center; margin-top: 4px; }
 .cg-btn { padding: 10px 28px; background: #1e1e3e; border: 1px solid #3a3a6a; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .2s; }
 .cg-btn:hover { background: #2e2e5e; }
@@ -1227,6 +1291,96 @@ canvas#gameCanvas {
   padding: 10px 0 2px;
   border-top: 1px solid #1a1a3a;
   width: 100%;
+  flex-wrap: wrap;
+}
+/* Export / Import small buttons */
+.roster-io-btn {
+  padding: 7px 14px;
+  border: 1px solid #2a2a4a;
+  border-radius: 18px;
+  background: #12122a;
+  color: #778;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.roster-io-btn:hover { background: #1a1a3a; color: #aab; border-color: #444488; }
+.roster-io-btn.export-btn:hover { color: #88ffcc; border-color: #44cc8866; }
+.roster-io-btn.import-btn:hover { color: #88aaff; border-color: #4466cc66; }
+
+/* ── Import Modal ── */
+.import-modal-box {
+  background: #0e0e22;
+  border: 1px solid #2a2a5a;
+  border-radius: 14px;
+  padding: 28px 28px 24px;
+  width: min(420px, 92vw);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 0 30px rgba(80,100,255,.25);
+}
+.import-modal-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; color: #556; font-size: 18px; cursor: pointer;
+}
+.import-modal-close:hover { color: #ff4455; }
+.import-modal-title { font-size: 18px; font-weight: 900; color: #ccd; }
+.import-file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  border: 2px dashed #2a2a5a;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #667;
+  font-size: 13px;
+  transition: border-color .2s, color .2s;
+}
+.import-file-label:hover { border-color: #4466cc; color: #99aaff; }
+.import-preview {
+  background: #0a1a0a;
+  border: 1px solid #226633;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #66cc88;
+}
+.import-actions {
+  display: flex;
+  gap: 10px;
+}
+.import-action-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #141428;
+  color: #ccd;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: background .2s, border-color .2s;
+}
+.import-action-btn.merge:hover   { background: #0a1a2a; border-color: #4488ff; color: #88aaff; }
+.import-action-btn.replace:hover { background: #1a0a0a; border-color: #ff4444; color: #ff8888; }
+.import-hint { font-size: 10px; font-weight: 400; color: #556; }
+.import-error {
+  background: #1a0808;
+  border: 1px solid #662222;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #ff6666;
 }
 
 /* Battle cards */
@@ -1277,6 +1431,44 @@ canvas#gameCanvas {
 .stats-modal-drow { display:flex; justify-content:space-between; align-items:center; background:#12122a; border-radius:6px; padding:6px 10px; font-size:12px; }
 .stats-modal-dlbl { color:#778; }
 .stats-modal-dval { font-weight:700; font-size:13px; }
+
+/* ── Stats modal — collapsible section headers ── */
+.smo-collapse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #667;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  cursor: pointer;
+  padding: 5px 4px;
+  border-radius: 5px;
+  user-select: none;
+  transition: background .15s, color .15s;
+}
+.smo-collapse-header:hover { background: #12122a; color: #99aacc; }
+.smo-arrow { font-size: 11px; }
+#smo-derived-toggle { margin-top: 10px; border-top: 1px solid #1a1a3a; padding-top: 10px; }
+
+/* ── Stats modal — Skills section ── */
+.stats-modal-skills { display:flex; flex-direction:column; gap:0; margin-top:4px; border-top:1px solid #1a1a3a; }
+.smo-skills-body { display:flex; flex-direction:column; gap:6px; padding-top:8px; }
+.smo-skill-card {
+  background: color-mix(in srgb, var(--sc,#334) 10%, #12122a);
+  border: 1px solid color-mix(in srgb, var(--sc,#556) 28%, transparent);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.smo-skill-top { display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:3px; }
+.smo-skill-name { font-size:13px; font-weight:700; color:var(--sc,#ccd); }
+.smo-skill-type {
+  font-size:10px; color:var(--sc,#778);
+  background:color-mix(in srgb, var(--sc,#334) 15%, transparent);
+  border:1px solid color-mix(in srgb, var(--sc,#556) 35%, transparent);
+  border-radius:10px; padding:1px 8px; white-space:nowrap; flex-shrink:0;
+}
+.smo-skill-desc { font-size:11px; color:#778; line-height:1.5; }
 
 /* ── Stats Log Modal ── */
 #stats-log-modal {
